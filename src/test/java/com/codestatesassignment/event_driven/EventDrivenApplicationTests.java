@@ -52,7 +52,10 @@ class EventDrivenApplicationTests {
     /** “hello”, “there” 를 순차적으로 publish하여 순서대로 나오는지 검증 */
     @Test
     public void orderPublish(){
-        Flux<String> flux = Flux.just("hello","there")
+        Mono<String> mono1 = Mono.just("hello");
+        Mono<String> mono2 = Mono.just("there");
+
+        Flux<String> flux = Flux.concat(mono1,mono2)
                                 .publishOn(Schedulers.boundedElastic())
                                 .log();
 
@@ -78,13 +81,6 @@ class EventDrivenApplicationTests {
                  return name;
              }
 
-             public String getEmail() {
-                 return email;
-             }
-
-             public String getPassword() {
-                 return password;
-             }
              public Person(String name, String email, String password) {
                  this.name = name;
                  this.email = email;
