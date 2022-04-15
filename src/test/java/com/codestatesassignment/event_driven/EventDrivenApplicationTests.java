@@ -9,6 +9,7 @@ import reactor.util.function.Tuple2;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,16 +57,41 @@ class EventDrivenApplicationTests {
      */
      @Test
      public void mapFlux(){
-         String[] person1 = {"John", "[john@gmail.com](mailto:john@gmail.com)", "12345678"};
-         String[] person2 = {"Jack", "[jack@gmail.com](mailto:jack@gmail.com)", "12345678"};
+         class Person {
+             private String name;
+             private String email;
+             private String password;
 
-         Flux<String> flux = Flux.just(person1).log();
+             public String getName() {
+                 return name;
+             }
+
+             public String getEmail() {
+                 return email;
+             }
+
+             public String getPassword() {
+                 return password;
+             }
+             public Person(String name, String email, String password) {
+                 this.name = name;
+                 this.email = email;
+                 this.password = password;
+             }
+         }
+
+         Person person1 = new Person("John", "[john@gmail.com](mailto:john@gmail.com)", "12345678");
+         Person person2 = new Person("Jack", "[jack@gmail.com](mailto:jack@gmail.com)", "12345678");
+
+         Flux<String> flux = Flux.just(person1, person2)
+                 .map(i -> i.getName().toUpperCase())
+                 .log();
 
          StepVerifier.create(flux)
-                 .expectNext("JOHN", "JACK")
+                 .expectNext("JOHN","JACK")
                  .verifyComplete();
-     }
 
+     }
 
     /**
      * 5. ["Blenders", "Old", "Johnnie"] 와 "[Pride", "Monk", "Walker”]를 압축하여 스트림으로 처리 검증
