@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 import reactor.util.function.Tuple2;
 
@@ -116,11 +118,14 @@ class EventDrivenApplicationTests {
 
     @Test
     public void searchCondition(){
-        Flux<String> words = Flux.just("google", "abc", "fb", "stackoverflow");
+        Flux<String> words = Flux.just("google", "abc", "fb", "stackoverflow")
+                .filter(w->w.length() >= 5)
+                .map(w->w.toUpperCase())
+                .publishOn(Schedulers.parallel())
+                .repeat(1)
+                .log();
 
-        Flux<String> flux = words.map(m->m.toUpperCase()).log();
-
-        StepVerifier.create(flux)
+        StepVerifier.create(words)
                 .expectNext("GOOGLE", "STACKOVERFLOW", "GOOGLE", "STACKOVERFLOW")
                 .verifyComplete();
     }
