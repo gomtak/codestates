@@ -90,7 +90,6 @@ class EventDrivenApplicationTests {
          StepVerifier.create(flux)
                  .expectNext("JOHN","JACK")
                  .verifyComplete();
-         System.out.println("test");
      }
 
     /**
