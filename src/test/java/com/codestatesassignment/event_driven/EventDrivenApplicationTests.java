@@ -90,7 +90,9 @@ class EventDrivenApplicationTests {
          StepVerifier.create(flux)
                  .expectNext("JOHN","JACK")
                  .verifyComplete();
-     }
+
+         ///git test
+      }
 
     /**
      * 5. ["Blenders", "Old", "Johnnie"] 와 "[Pride", "Monk", "Walker”]를 압축하여 스트림으로 처리 검증
