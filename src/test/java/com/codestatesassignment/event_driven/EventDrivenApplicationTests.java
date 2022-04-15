@@ -40,16 +40,26 @@ class EventDrivenApplicationTests {
     /** 1~100 까지의 자연수 중 짝수만 출력하는 로직 검증 */
     @Test
     public void printEven(){
-        Flux.range(1,100)
+        Flux<Integer> flux = Flux.range(1,100)
                 .filter(i -> i % 2 == 0)
-                .subscribe(System.out::println);
+                .log();
+
+        StepVerifier.create(flux)
+                .thenConsumeWhile(i->i % 2 ==0)
+                .verifyComplete();
     }
 
     /** “hello”, “there” 를 순차적으로 publish하여 순서대로 나오는지 검증 */
     @Test
     public void orderPublish(){
-        Flux.just("hello","there")
-                .subscribe(System.out::println);
+        Flux<String> flux = Flux.just("hello","there")
+                                .publishOn(Schedulers.boundedElastic())
+                                .log();
+
+        StepVerifier.create(flux)
+                .expectNext("hello","there")
+                .verifyComplete();
+
     }
 
     /**
@@ -129,12 +139,5 @@ class EventDrivenApplicationTests {
                 .expectNext("GOOGLE", "STACKOVERFLOW", "GOOGLE", "STACKOVERFLOW")
                 .verifyComplete();
     }
-
-
-
-
-
-
-
 
 }
